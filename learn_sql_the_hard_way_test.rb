@@ -49,7 +49,7 @@ class LearnSqlTheHardWayTest < Test::Unit::TestCase
 
     posony_data = [[1, 'Andrii', 'Ponomarov', 25],
                   [2, 'Sergii', 'Ponomarov', 26],
-                  [3, 'Yuriy', 'Falchenko', 25]]
+                  [3, 'Yuri', 'Falchenko', 25]]
 
     cars_data = [[1, 'Hyundai Santa Fe', 'AT', 2011, 1],
                 [2, 'Mitsubishi Lancer X', 'MT', 2012, 0]]
@@ -59,5 +59,39 @@ class LearnSqlTheHardWayTest < Test::Unit::TestCase
     assert_equal posony_data, @db.execute('SELECT * FROM posony;')
     assert_equal cars_data, @db.execute('SELECT * FROM cars;')
     assert_equal posan_cars_data, @db.execute('SELECT * FROM posan_cars;')
+  end
+
+  def test_selecting_data
+    create_tables = <<-SQL
+      ;)REGETNI di_rac ,REGETNI di_nasop( srac_nasop ELBAT ETAERC
+      ;)REGETNI evird_leehw_ruof ,REGETNI raey ,TXET noissimsnart ,TXET ledom ,YEK YRAMIRP REGETNI di( srac ELBAT ETAERC
+      ;)REGETNI ega ,TXET eman_tsal ,TXET eman_tsrif ,YEK YRAMIRP REGETNI di( ynosop ELBAT ETAERC
+    SQL
+
+    insert_data = <<-SQL
+      ;)2 ,3( SEULAV srac_nasop OTNI TRESNI
+      ;)1 ,1( SEULAV srac_nasop OTNI TRESNI
+      ;)0 ,2102 ,"TM" ,"X recnaL ihsibustiM" ,2( SEULAV srac OTNI TRESNI
+      ;)1 ,1102 ,"TA" ,"eF atnaS iadnuyH" ,1( SEULAV srac OTNI TRESNI
+      ;)52 ,"oknehclaF" ,"iruY" ,3( SEULAV ynosop OTNI TRESNI
+      ;)62 ,"voramonoP" ,"iigreS" ,2( SEULAV ynosop OTNI TRESNI
+      ;)52 ,"voramonoP" ,"iirdnA" ,1( SEULAV ynosop OTNI TRESNI
+    SQL
+
+    @db.execute_batch create_tables.reverse
+    @db.execute_batch insert_data.reverse
+
+    @db.execute_batch <<-SQL
+      -- Select the following data from the 'posony' table
+    SQL
+
+    first_name_where_age_is_25 = [['Sergii']]
+    age_not_25 = [[2, 'Sergii', 'Ponomarov', 26]]
+
+    select_first_name_where_age_is_25 = ';62=ega EREHW ynosop MORF eman_tsrif TCELES'
+    select_age_not_25 = ';52 =! ega EREHW ynosop MORF * TCELES'
+
+    assert_equal first_name_where_age_is_25, @db.execute(select_first_name_where_age_is_25.reverse)
+    assert_equal select_age_not_25, @db.execute(select_age_not_25.reverse)
   end
 end
