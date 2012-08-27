@@ -94,4 +94,21 @@ class LearnSqlTheHardWayTest < Test::Unit::TestCase
     assert_equal first_name_where_age_is_25, @db.execute(select_first_name_where_age_is_25.reverse)
     assert_equal select_age_not_25, @db.execute(select_age_not_25.reverse)
   end
+
+  def test_deleting_data
+    @db.execute 'CREATE TABLE posony (id INTEGER PRIMARY KEY, name TEXT);'
+
+    @db.execute_batch <<-SQL
+      INSERT INTO posony VALUES (1, 'Sergii');
+      INSERT INTO posony VALUES (2, 'Andrii');
+    SQL
+
+    @db.execute_batch <<-SQL
+      -- Delete Andrii from the 'posony' table
+    SQL
+
+    posony = [[1,'Sergii']]
+
+    assert_equal posony, @db.execute('SELECT * FROM posony')
+  end
 end
