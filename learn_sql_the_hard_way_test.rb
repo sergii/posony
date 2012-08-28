@@ -111,4 +111,36 @@ class LearnSqlTheHardWayTest < Test::Unit::TestCase
 
     assert_equal posony, @db.execute('SELECT * FROM posony')
   end
+
+  def test_destroying_tables
+    @db.execute 'CREATE TABLE posony (id INTEGER PRIMARY KEY, name TEXT);'
+
+    @db.execute_batch <<-SQL
+      -- Destroy 'posony' table
+    SQL
+
+    assert_equal [], @db.table_info('posony')
+  end
+
+  def test_altering_tables
+    @db.execute 'CREATE TABLE posony (id INTEGER PRIMARY KEY, name TEXT);'
+
+    @db.execute_batch <<-SQL
+      -- Change name of table 'posony' to 'guys'
+      -- Add column 'age' (type INTEGER)
+    SQL
+
+    assert_equal [], @db.execute('SELECT age FROM guys;')
+  end
+
+  def test_basic_transactions
+    @db.execute 'CREATE TABLE posony (id INTEGER PRIMARY KEY, name TEXT);'
+
+    @db.execute_batch <<-SQL
+      -- Use transaction commands to undo following changes
+      INSERT INTO posony VALUES (1, 'Sergii');
+    SQL
+
+    assert_equal [], @db.execute('SELECT * FROM posony;')
+  end
 end
